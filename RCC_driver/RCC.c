@@ -1,4 +1,4 @@
-/**
+/***
  * @file RCC.h
  * @author Mariam El-Shakafi (mariam.elshakafi@gmail.com)
  * @brief This is the user interface for the RCC Driver
@@ -8,7 +8,19 @@
  * @copyright Copyright (c) 2020
  * 
  */
-#include "Std_Types.h"
+
+/***
+ * @file RCC.h
+ * @author Mariam El-Shakafi (mariam.elshakafi@gmail.com)
+ * @brief This is the user interface for the RCC Driver
+ * @version 0.1
+ * @date 2020-03-28
+ * 
+ * @copyright Copyright (c) 2020
+ * 
+ */
+
+#include "STD_TYPES.h"
 #include "RCC.h"
 
 typedef struct
@@ -29,24 +41,24 @@ typedef struct
 #define RCC_peripheral    ((volatile RCC_regMap *) RCC_BASE_ADDRESS)
 
 
-/* Mask used by RCC_selectSystemClock() function */
+/** Mask used by RCC_selectSystemClock() function */
 #define RCC_CFGR_SW 0x00000003
 
 
-/* Masks used by RCC_setClockState() function */
+/** Masks used by RCC_setClockState() function */
 #define RCC_HSI_RDY 0x00000002
 #define RCC_HSE_RDY 0x00020000
 #define RCC_PLL_RDY 0x02000000
 
 
-/* Masks used by RCC_configurePLL() function */
+/** Masks used by RCC_configurePLL() function */
 #define RCC_PLL_CONFIG 0x003F0000
 
 
-/* Masks used by RCC_configureMCO() function */
+/** Masks used by RCC_configureMCO() function */
 #define RCC_MCO_CONFIG 0x07000000
 
-/* 
+/** 
 * Function Name: RCC_controlAHBPeripheral
 * Function Arguments: 
 * u32 peripheralNum - takes one of these values
@@ -77,7 +89,7 @@ void RCC_controlAHBPeripheral(u32 peripheralNum, u32 status)
 }
 
 
-/**
+/** 
 * Function Name: RCC_controlAPB2Peripheral
 * Usage: Disable/Enable peripherals on APB2
 * Function Arguments: 
@@ -120,7 +132,7 @@ void RCC_controlAPB2Peripheral(u32 peripheralNum, u32 status)
 }
 
 
-/**
+/** 
 * Function Name: RCC_controlAPB1Peripheral
 * Usage: Disable/Enable peripherals on APB1
 * Function Arguments: 
@@ -169,7 +181,7 @@ void RCC_controlAPB1Peripheral(u32 peripheralNum, u32 status)
 }
 
 
-/**
+/** 
 * Function Name: RCC_selectSystemClock
 * Usage: Select clock source for the system
 * Function Arguments:
@@ -187,7 +199,7 @@ void RCC_selectSystemClock(u32 sysClkNum)
 }
 
 
-/**
+/** 
 * Function Name: RCC_selectSystemClock
 * Usage: RCC_ON/RCC_OFF a clock source
 * Function Arguments:
@@ -210,15 +222,29 @@ void RCC_setClockState(u32 clkNum, u32 status)
     
     case RCC_ON:
       (RCC_peripheral->RCC_CR) |= clkNum;
-      while(clkNum == RCC_HSI_ON && !((RCC_peripheral->RCC_CR) & RCC_HSI_RDY));
-      while(clkNum == RCC_HSE_ON && !((RCC_peripheral->RCC_CR) & RCC_HSE_RDY));
-      while(clkNum == RCC_PLL_ON && !((RCC_peripheral->RCC_CR) & RCC_PLL_RDY));
+
+
+      if(clkNum == RCC_HSI_ON)
+      {
+		  while(!((RCC_peripheral->RCC_CR) & RCC_HSI_RDY));
+      }
+
+      else if(clkNum == RCC_HSE_ON)
+      {
+		  while(!((RCC_peripheral->RCC_CR) & RCC_HSE_RDY));
+      }
+
+      else if(clkNum == RCC_PLL_ON)
+      {
+		  while(!((RCC_peripheral->RCC_CR) & RCC_PLL_RDY));
+      }
+
     break;
   }
 }
 
 
-/**
+/** 
 * Function Name: RCC_configurePLL
 * Usage: configure PLL source & speed
 * Function Arguments:
@@ -253,7 +279,7 @@ void RCC_configurePLL(u32 pllSrc, u32 speedMul)
 
 
 
-/**
+/** 
 * Function Name: RCC_configurePrescalers
 * Usage: configure prescalers for a specific target
 * Function Arguments:
@@ -284,14 +310,12 @@ void RCC_configurePLL(u32 pllSrc, u32 speedMul)
 */
 void RCC_configurePrescalers(u32 target, u32 preValue)
 {
-  u32 RCC_CFGR_TEMP = RCC_peripheral->RCC_CFGR;
-  RCC_CFGR_TEMP &= ~target;
-  RCC_CFGR_TEMP |= preValue;
-  (RCC_peripheral->RCC_CFGR) = RCC_CFGR_TEMP;
+  (RCC_peripheral->RCC_CFGR) &= ~target;
+  (RCC_peripheral->RCC_CFGR) |= preValue;
 }
 
 
-/**
+/** 
 * Function Name: RCC_configureMCO
 * Usage: configure MCO source
 * Function Arguments:

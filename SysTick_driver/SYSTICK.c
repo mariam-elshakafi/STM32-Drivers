@@ -20,7 +20,7 @@ typedef struct
 #define SYSTICK_CLKSRC_SETMASK  0x00000004
 
 
-static SYSTICK_cbF AppCbF;
+static SYSTICK_cbF AppCbF = NULL;
 
 
 void SYSTICK_init(void)
